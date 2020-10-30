@@ -7,11 +7,17 @@
 
 import SwiftUI
 
-struct ContentView: View {
+struct CertificatesView: View {
     
     @State var show = false // for animation
     
     @State var viewState = CGSize.zero // for dragging gesture
+    
+    @State var showCard = false // to show the full card on bottom
+    
+    @State var bottomState = CGSize.zero // drag bottom card to adjust size
+    
+    @State var showFullBottomCard = false
     
     var body: some View {
         
@@ -19,16 +25,24 @@ struct ContentView: View {
             
             TitleView()
                 .blur(radius: show ? 20 : 0)
-                .animation(.default)
-            
+                .opacity(showCard ? 0.4 : 1)
+                // moves the whole top background upwards when showing card
+                .offset(x: 0, y: showCard ? -200 : 0)
+                .animation(
+                    Animation // need this value type
+                        .default
+                        .delay(0.1)
+                        .speed(2)
+                    //                        .repeatCount(3)
+                )
             
             
             BackCardView()
                 .background(show ? Color("card3") : Color("card4"))
                 .cornerRadius(20) // cornerRadius is clipping the background
                 .shadow(radius: 20 )
-                .offset(x: 0, y: show ? -400 : -40) // note this comes first
-                .offset(x: viewState.width, y: viewState.height)  // CGSize have viewstate of width and height
+                .offset(x: 0, y: show ? -100 : -40) // note this comes first
+                .offset(x: viewState.width, y: showCard ? viewState.height - 200 :viewState.height)  // CGSize have viewstate of width and height
                 .rotationEffect(.degrees(show ? 0 : 10))
                 .rotation3DEffect(
                     Angle(degrees: 10),
@@ -42,8 +56,8 @@ struct ContentView: View {
                 .background(show ? Color("card4") : Color("card3"))
                 .cornerRadius(20) // cornerRadius is clipping the background
                 .shadow(radius: 20 )
-                .offset(x: 0, y: show ? -200 : -20)
-                .offset(x: viewState.width, y: viewState.height)  // CGSize have viewstate of width and height
+                .offset(x: 0, y: show ? -50 : -20) // offset for the angled card
+                .offset(x: viewState.width, y: showCard ? viewState.height - 170 :viewState.height)  // CGSize have viewstate of width and height
                 .rotationEffect(.degrees(show ? 0 : 5)) // note the ternary operator x ? :
                 .rotation3DEffect(
                     Angle(degrees: 5),
@@ -54,10 +68,17 @@ struct ContentView: View {
             
             
             CardView()
-                .offset(x: viewState.width, y: viewState.height)  // CGSize have viewstate of width and height
+                .frame(width: showCard ? 375 : 340, height: 220, alignment: .center) // expands the size when showing 
+                .background(Color.black)
+                //                .cornerRadius(20)
+                .clipShape(RoundedRectangle(cornerRadius: showCard ? 30 : 20, style: .continuous))
+                .shadow(radius: 20 )
+                .offset(x: viewState.width, y: showCard ? viewState.height - 150 :viewState.height)  // CGSize have viewstate of width and height
+                
                 .blendMode(.hardLight)
                 .animation(.spring(response: 0.3, dampingFraction: 0.6, blendDuration: 0))
                 .onTapGesture(count: /*@START_MENU_TOKEN@*/1/*@END_MENU_TOKEN@*/, perform: {
+                    showCard.toggle()
                     show.toggle()
                 })
                 
@@ -66,16 +87,49 @@ struct ContentView: View {
                     viewState = value.translation
                     show = true
                     
+                    
                 }.onEnded({ (value) in
                     viewState = .zero // reset the position
                     show = false
+                    showCard = false
                 })
                 )
             
+            //            Text("\(bottomState.height)").offset(x: 0, y: -400)
             
             BottomCardView()
-                .blur(radius: show ? 20 : 0)
-                .animation(.default)
+                .offset(x: 0, y: showCard ? 360 : 1000)
+                .offset( y: bottomState.height)
+                //                .blur(radius: show ? 20 : 0)
+                .animation(.timingCurve(0.2, 0.8, 0.2, 1, duration: 0.8)) // custom timing curve
+                .gesture(
+                    DragGesture()
+                        .onChanged({ (value) in
+                            bottomState = value.translation
+                            if showFullBottomCard {
+                                bottomState.height += -300
+                            }
+                            // so we don't see the bottom of the card.
+                            if bottomState.height < -300{
+                                bottomState.height = -300 // basically -300 is maximum drag
+                            }
+                        })
+                        .onEnded({ (value) in
+                            if bottomState.height > 75{
+                                showCard = false
+                                show = false
+                            }
+                            // if bottom card height is -100( little above ) of less and NOT showing full card, OR if bottomcard height is -250 (almost all the way up ) and showing full card, THEN run below code.
+                            if (bottomState.height < -100 && !showFullBottomCard) ||
+                                (bottomState.height < -250 && showFullBottomCard){
+                                bottomState.height = -300
+                                showFullBottomCard = true
+                                
+                            } else {
+                                bottomState = .zero
+                                showFullBottomCard = false
+                            }
+                        }))
             
         }
     }
@@ -84,9 +138,9 @@ struct ContentView: View {
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         Group{
-            ContentView().previewDevice("iPhone 11")
-            ContentView().previewDevice("iPhone 11 Max Pro")
-            ContentView().previewDevice("iPhone SE (2nd generation)")
+            CertificatesView().previewDevice("iPhone 11")
+            //            ContentView().previewDevice("iPhone 11 Max Pro")
+            //            ContentView().previewDevice("iPhone SE (2nd generation)")
         }
     }
 }
@@ -119,10 +173,6 @@ struct CardView: View {
                 .frame(width: 300, height: 110, alignment: .top)
             
         } // end of stack for whole card
-        
-        .frame(width: 340, height: 220, alignment: .center)
-        .background(Color.black).cornerRadius(20)
-        .shadow(radius: 20 )
     }
 }
 
@@ -134,7 +184,7 @@ struct BackCardView: View {
             Spacer()
         }
         .scaleEffect(0.9)
-        .frame(width: 340, height: 220)
+        .frame(width: 320, height: 220)
         .rotationEffect(.init(degrees: rotationDegrees))
         
         
@@ -179,6 +229,6 @@ struct BottomCardView: View {
         .background(Color.white)
         .cornerRadius(30)
         .shadow(radius: 20)
-        .offset(x: 0, y: 510)
+        
     }
 }
