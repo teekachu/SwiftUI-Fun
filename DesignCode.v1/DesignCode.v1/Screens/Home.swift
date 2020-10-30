@@ -19,10 +19,11 @@ struct Home: View {
             Color(#colorLiteral(red: 0.8039215803, green: 0.8039215803, blue: 0.8039215803, alpha: 1))
                 .edgesIgnoringSafeArea(.vertical)
             
-            HomeView(showProfile: $showProfile)
+            HomeView(showProfile: $showProfile, showUpdate: .constant(false))
                 
             .padding(.top, 44) // size of top status bar
-            .background(Color.white)
+                .background(LinearGradient(gradient: Gradient(colors: [Color(#colorLiteral(red: 0.921431005, green: 0.9214526415, blue: 0.9214410186, alpha: 1)), Color.white]), startPoint: .top, endPoint: .bottom))
+//            .background(Color.white)
             .clipShape(RoundedRectangle(cornerRadius: 30, style: .continuous))
             .shadow(color: Color.black.opacity(0.2), radius: 20, x: 0, y: 20)
             .offset(x: 0, y: showProfile ? -450 : 0)
@@ -81,20 +82,31 @@ struct AvatarButtonView: View {
     }
 }
 
+
 struct AlertButtonView: View {
+    // created a State for the showUpdate and set default to false
+    @State var showUpdate = false
+    
     var body: some View {
         Button(action: {
-            
+            // passed in showUpdate
+            showUpdate.toggle()
         }){
             Image(systemName: "bell")
                 .renderingMode(.original)  // get rid of color tint
-                .resizable()
-                .frame(width: 20, height: 20)
-                .frame(width: 50, height: 50)
+                .font(.system(size: 16, weight: .medium))
+                .frame(width: 36, height: 36)
                 .background(Color(#colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)))
                 .clipShape(Circle())
-                .shadow(radius: 3)
+                .shadow(color: Color.black.opacity(0.1), radius: 1, x: 0, y: 1) // first shadow
+                .shadow(color: Color.black.opacity(0.2), radius: 10, x: 0, y: 10 )
             
+        }
+        
+        // when button is pressed, i want to summon MenuView()
+        // modal presentation:
+        .sheet(isPresented: $showUpdate){
+            UpdateList()
         }
     }
 }
