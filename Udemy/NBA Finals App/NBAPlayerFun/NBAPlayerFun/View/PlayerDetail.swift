@@ -36,10 +36,10 @@ struct PlayerDetail: View {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        Group{
-            PlayerDetail(playerInfo: players[2]).previewDevice("iPhone 11")
-            PlayerDetail(playerInfo: players[2]).previewDevice("iPhone 11 Max Pro")
-            PlayerDetail(playerInfo: players[2]).previewDevice("iPhone SE (2nd generation)")
-        }
+        //        Group{
+        PlayerDetail(playerInfo: players[2]).previewDevice("iPhone 11")
+        //            PlayerDetail(playerInfo: players[2]).previewDevice("iPhone 11 Max Pro")
+        //            PlayerDetail(playerInfo: players[2]).previewDevice("iPhone SE (2nd generation)")
+        //        }
     }
 }
