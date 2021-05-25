@@ -163,8 +163,7 @@ struct LoginView: View {
             }
             
             if isSuccess{
-                SuccessView()
-            }
+                SuccessView() }
         }
     }
 }

@@ -9,7 +9,11 @@ import SwiftUI
 
 struct CourseList: View {
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        List(0 ..< 5) { item in
+            CourseRow()
+        }
+//        .listStyle(InsetGroupedListStyle())
+        .navigationTitle("Courses")
     }
 }
 

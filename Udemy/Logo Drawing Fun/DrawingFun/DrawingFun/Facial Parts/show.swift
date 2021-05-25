@@ -8,8 +8,27 @@
 import SwiftUI
 
 struct show: View {
+    @State var profiles: [Profile] = []
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        List(profiles) { item in
+            
+            VStack(alignment: .leading) {
+                Text(item.name)
+                    .bold()
+                
+                Text(item.email)
+                Text(item.address.street + ", " + item.address.suite)
+                Text(item.address.city + ", " + item.address.zipcode)
+                
+            }
+            
+        }
+        .onAppear {
+            Api().getProfile { (profiles) in
+                self.profiles = profiles
+            }
+        }
     }
 }
 

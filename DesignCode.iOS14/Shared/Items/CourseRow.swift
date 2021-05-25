@@ -10,16 +10,16 @@ import SwiftUI
 struct CourseRow: View {
     var body: some View {
         
-        HStack(alignment: .top) {
+        HStack(spacing: 10) {
             Image(systemName: "paperplane.circle.fill")
                 .renderingMode(.template)
                 .frame(width: 48, height: 48)
                 .imageScale(.medium)
-                .background(/*@START_MENU_TOKEN@*//*@PLACEHOLDER=View@*/Color.blue/*@END_MENU_TOKEN@*/)
+                .background(Color(#colorLiteral(red: 0.1411764771, green: 0.3960784376, blue: 0.5647059083, alpha: 1)))
                 .clipShape(Circle())
                 .foregroundColor(Color.white)
             
-            VStack(alignment: .leading, spacing: 4.0) {
+            VStack(alignment: .leading, spacing: 5.0) {
                 Text("SwiftUI")
                     .font(.subheadline)
                 Text("Description")
@@ -29,6 +29,8 @@ struct CourseRow: View {
             Spacer()
             
         }
+//        .frame(maxWidth: .infinity)
+        .padding(5)
         
 
     }

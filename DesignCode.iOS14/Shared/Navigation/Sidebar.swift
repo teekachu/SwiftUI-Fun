@@ -13,9 +13,11 @@ struct Sidebar: View {
             
             Content()
                 .navigationTitle("Learn")
-                .toolbar {ToolbarItem(placement: .automatic) {
+                .toolbar {
+                    ToolbarItem(placement: .automatic) {
                     Image(systemName: "person.crop.circle")
                 }}
+            
             CoursesView()
         }
     }
